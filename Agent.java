@@ -1,55 +1,66 @@
-import java.util.random;
 
-public class Agent{
-    private int lifePoints;
-    private double coop_chance;
+public class Agent {
+    // private int lifePoints;
     private boolean cooperator;
+    public int[] connections;
     private boolean alive;
 
-    public Agent (int lifePoints, double coop_chance){
-        this.lifePoints = lifePoints;
-        this.cooperator = set_coop(coop_chance);
-        this.alive = lifePoints > 0; // Agent is alive if lifePoints > 0
-     }
-    
-    public int getLifePoints(){
-        return this.lifePoints;
+    public Agent() {
+        connections = new int[4];
+        this.cooperator = true;
+        this.alive = true; // Agent is alive if lifePoints > 0
     }
-    
-    public boolean isCooperator(){
+
+    public void setCooperator(boolean bool) {
+        this.cooperator = bool;
+    }
+
+    // public int getLifePoints() {
+    // return this.lifePoints;
+    // }
+
+    public boolean isCooperator() {
         return this.cooperator;
     }
-        
-    public boolean isAlive(){
+
+    public boolean isAlive() {
         return this.alive;
     }
-//Christina 
-    private boolean set_live(){
-      if (this.lifePoints > 0){//possibly change from zero, depending  
-          this.alive = true;
-      }
-      else {
-      this.alive = false; 
-    }
+
+    public void setAlive(boolean isAlive) {
+        this.alive = isAlive;
     }
 
-/*
-set_coop is intended to be used for setting whether the agent is choosing to cooperate or not
-    Precondition: double chance : the chance, from 0 to 1, of an agent defecting
-    Postcondition: boolean : returns false if the agent is a defector
-    (Kevin)
-*/
-public boolean set_coop(double chance){
-    Random rand = new Random();
-    double num = (1 + rand.nextInt(100)/ 100);
-    if(num < chance){
-    return true;
-    }else{
-    return false;
+    public String printAgent() {
+        String rtn = "";
+
+        if (this.alive) {
+            if (this.cooperator) {
+                rtn += " (Cooperator)";
+            } else {
+                rtn += " (Deafector) ";
+            }
+        } else {
+            rtn += " (Dead-RIP)  ";
+        }
+
+        rtn += " [ ";
+        for (int i = 0; i < this.connections.length; i++) {
+            rtn += this.connections[i] + " ";
+        }
+        rtn += "] ";
+
+        return rtn;
     }
-} 
+
+    // Christina
+    // private boolean set_live() {
+    // if (this.lifePoints > 0) {// possibly change from zero, depending
+    // this.alive = true;
+    // } else {
+    // this.alive = false;
+    // }
+    // return false;
+    // }
+
 }
-
-
-
- 
