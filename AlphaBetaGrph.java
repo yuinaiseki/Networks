@@ -1,9 +1,6 @@
-
-
 /*
-Requires Javafx + jdk 23.0.1 
+Javafx + jdk 23.0.1 required
 */
-
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,34 +25,24 @@ public class AlphaBetaGrph extends Application {
         int numberOfRuns = 20;
         int[][] returned = new int[numberOfRuns][3];
         double[] Averages = { 0, 0, 0 };
-        double[][] graph = new double[Alphas.length][Betas.length];
+        String[][] graph = new String[Alphas.length][Betas.length];
         System.out.println(Alphas.length)
         ;System.out.println(Betas.length);
         int alph = 0;
         int beta = 0;
         for (double a : Alphas) {
             for (double b : Betas) {
-
                 for (int run = 0; run < numberOfRuns; run++) {
                     returned[run] = driver.runGame(a, b);
-                    //Averages[0] = Averages[0] + returned[run][0];
-                    //Averages[1] = Averages[1] + returned[run][1];
                     Averages[2] = Averages[2] + returned[run][2];
                 }
-                //Averages[0] = Averages[0] / numberOfRuns;
-                //Averages[1] = Averages[1] / numberOfRuns;
                 Averages[2] = Averages[2] / numberOfRuns;
-
-                //Averages[0] = Math.round(Averages[0] * 100) / 100.0;
-                //Averages[1] = Math.round(Averages[1] * 100) / 100.0;
                 Averages[2] = Math.round(Averages[2] * 100) / 100.0;
-       
-            graph[alph][beta] = Averages[2] / 144;
-            Averages[0] = 0;
-            Averages[1] = 0;
-            Averages[2] = 0;
-            
-            beta++;
+                graph[alph][beta] = pickcolor(Averages[2] / 144);
+                Averages[0] = 0;
+                Averages[1] = 0;
+                Averages[2] = 0;
+                beta++;
             }
             alph++;
             beta = 0;
@@ -64,26 +51,35 @@ public class AlphaBetaGrph extends Application {
         GridPane grid = new GridPane();
         for(int c = 0; c < 20; c++ ){
             for(int r = 0; r < 20; r++){
-
-                //String color = Integer.toHexString((int) ((int)(0xFFFFFF * ((double) (c + r + 1) / GRIDSIZE))) * 16 / 16);
-                //color = color.substring(0, 6);
-                String color = "0000CD";
-                //double opacity = ((double) (c + r)) / (GRIDSIZE*2); 
-                //System.out.println(opacity);
-
-                //if((c + r)%2 == 0){
-                    grid.add(new Rectangle(SCREENSIZE/GRIDSIZE,SCREENSIZE/GRIDSIZE, Color.web(color, graph[r][c])), c, r);
-                    grid.add(new Label(c + "," + r), c, r);
-                // } else{
-                //     grid.add(new Rectangle(SCREENSIZE/GRIDSIZE,SCREENSIZE/GRIDSIZE, Color.web(color, opacity)), c, r);
-                //     grid.add(new Label(c + "," + r), c, r);
+                    grid.add(new Rectangle(SCREENSIZE/GRIDSIZE,SCREENSIZE/GRIDSIZE, Color.web(graph[r][c], .8)), c, r);
                 }
             }
-        
         Scene scene_3 = new Scene(grid, SCREENSIZE, SCREENSIZE);
         stage.setScene(scene_3);
-
         stage.show();
+    }
+
+    public static String pickcolor(double mortality){
+        if(mortality < .1){
+            return "DC143C";
+        }if(mortality < .2){
+            return "FF8C00";
+        }if(mortality < .3){
+            return "FFD700";
+        }if(mortality < .4){
+            return "7CFC00";
+        }if(mortality < .5){
+            return "87CEFA";
+        }if(mortality < .6){
+            return "48D1CC";
+        }if(mortality < .7){
+            return "1E90FF";
+        }if(mortality < .8){
+            return "0000CD";
+        }if(mortality < .9){
+            return "483D8B";
+        }
+        return "000000";
     }
 
     public static void main(String[] args) {
