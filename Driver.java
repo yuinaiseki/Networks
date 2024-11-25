@@ -1,8 +1,9 @@
 
+
 public class Driver {
 
-    public static final int[] LATICE_DIMENTIONS = { 12, 12 };
-    public static final int NUM_AGENTS = LATICE_DIMENTIONS[0] * LATICE_DIMENTIONS[1];
+    public static int[] LATICE_DIMENTIONS = { 12, 12 };
+    public static int NUM_AGENTS = LATICE_DIMENTIONS[0] * LATICE_DIMENTIONS[1];
     public static final String[] LIFE_STATES = { "dead", "alive" };
 
     public double[] LIFE_POINT_REWARDS = { 1.25, 1, 0, 0 }; // 1.01 1.25 1.5 2 beta
@@ -14,7 +15,15 @@ public class Driver {
     public MatrixDouble mat;
 
     public Driver() {
+        LATICE_DIMENTIONS[0] = 12;
+        LATICE_DIMENTIONS[1] = 12;
+        NUM_AGENTS = 144;
+    }
 
+    public Driver(int latdim) {
+        LATICE_DIMENTIONS[0] = latdim;
+        LATICE_DIMENTIONS[1] = latdim;
+        NUM_AGENTS = latdim*latdim;
     }
 
     public void initialize() {
