@@ -1,7 +1,7 @@
 
 
 /*
-Requires Javafx + jdk 23.0.1
+Requires Javafx + jdk 23.0.1 
 */
 
 import javafx.application.Application;
