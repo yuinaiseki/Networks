@@ -2,9 +2,7 @@
 /*
 Javafx and jdk23.0.1 required
 */
-
 import javafx.application.Application;
-
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
@@ -12,16 +10,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.GridPane;
 
 public class AlphaBetaGrph extends Application {
- public int GRIDSIZE = 20;
+ public int GRIDSIZE = 80;
  public int SCREENSIZE = 960;
  public int xylength = GRIDSIZE;
- public int latSize = 12;
+ public int latSize = 20;
  public int numnodes = latSize*latSize;
     
     public double[] initArrs(double[] Arr, double from, double to){
         for(int r = 0; r < xylength; r++){
             Arr[r] =from - (((from - to)/xylength)*r);
-            System.out.println(Arr[r] + "\n");
         }
         return Arr;
     }
@@ -30,17 +27,15 @@ public class AlphaBetaGrph extends Application {
     public void start(@SuppressWarnings("exports") Stage stage) {
         System.out.println("System Running");
 
-        Driver driver = new Driver();
+        Driver driver = new Driver(latSize);
         double[] Alphas = new double[xylength];
         double[] Betas = new double[xylength];
         initArrs(Alphas, 1, 0);
-        initArrs(Betas, 2, 1);
+        initArrs(Betas, 1, 2);
         int numberOfRuns = 5;
         int[][] returned = new int[numberOfRuns][3];
         double[] Averages = { 0, 0, 0 };
         double[][] graph = new double[Alphas.length][Betas.length];
-        System.out.println(Alphas.length)
-        ;System.out.println(Betas.length);
         int alph = 0;
         int beta = 0;
         for (double a : Alphas) {
@@ -73,6 +68,7 @@ public class AlphaBetaGrph extends Application {
     }
 
     public static String pickcolor(double mortality){
+        mortality = 1 - mortality;
         if(mortality < .1){
             return "DC143C";
         }if(mortality < .2){
