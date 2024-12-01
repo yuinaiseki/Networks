@@ -1,4 +1,6 @@
-
+/*
+Javafx and jdk23.0.1 required
+*/
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -7,37 +9,62 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.GridPane;
 
 public class SingleRun extends Application {
+    //side length of the square lattice of nodes
  public int GRIDSIZE = 120;
+
+    // pixel size of visual display total
  public int SCREENSIZE = 960;
+
  public int xylength = GRIDSIZE;
  public int latSize = GRIDSIZE;
+
+    //number of total nodes in the lattice
  public int numnodes = latSize*latSize;
+
+    //number rounds that will be displayed
  public int stages = 60;
+
+    //number of simulation steps in each round
  public int stagesize = 4;
+
+    //alpha of the simulation
  public double alpha = .49;
+
+    //beta of the simulation
  public double beta = 1.75;
     
-    public double[] initArrs(double[] Arr, double from, double to){
-        for(int r = 0; r < xylength; r++){
-            Arr[r] =from - (((from - to)/xylength)*r);
-        }
-        return Arr;
-    }
-    
+
+    /*
+    Displayes a graph of the state of each node in the lattice after each round. Blue nodes are cooperators. 
+    Red nodes are defectors. White nodes are dead. To proceed to the next round, exit the visual.
+        \param Stage do not worry about this. It is taken from the current environment. Used to display visual.
+    */
+
     @Override
     public void start(@SuppressWarnings("exports") Stage stage) {
         System.out.println("System Running");
 
         SingleRunDriver driver = new SingleRunDriver(latSize);
+        //set up driver and int[][] representation of agent lattice
         driver.initialize();
         int[][] graph = new int[latSize][latSize];
+        //start the simulation and stop after the first iteration
         graph = driver.runGame(alpha, beta, 1);
+        //graph and then resume the simulation for stagesize iterations, in a loop
         for(int i = 0; i < stages; i++){
         displayGraph(stage, SCREENSIZE, graph);
         graph = driver.resumeGame(stagesize);
         }
        
     }
+    
+    
+ /*
+   CReates and displays the graph of a given int array
+        \param Stage do not worry about this. It is taken from the current environment. Used to display visual.
+        \param SCREENSIZE pixel size of screen
+        \param Graph the matrix that is graphed
+*/
 
     public void displayGraph(Stage stage, int SCREENSIZE, int[][] Graph){
         GridPane grid = new GridPane();
@@ -52,6 +79,12 @@ public class SingleRun extends Application {
         newstage.showAndWait();
 
     }
+
+      /*
+        Takes an agent state and translates it to a color for the graph
+        \param mortality is a double describing the state of nodes in a simulation 
+        returns a string of the hex number of the color corresponding to the state of an agent
+    */
     public static String pickcolor(double state){
         if(state == 0){
             return "FFFFFF";
