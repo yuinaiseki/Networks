@@ -13,6 +13,7 @@ public class Driver {
     public double[][] CooperationScore;
     public double[][] SummingMatrix;
     public MatrixDouble mat;
+    public int runs_per = 100;
 
     public Driver() {
         LATICE_DIMENTIONS[0] = 12;
@@ -31,10 +32,6 @@ public class Driver {
         mat = new MatrixDouble();
         setupAgents();
         setupConnections("square");
-
-        // System.out.println("Cooperation Matrix");
-        // mat.printMatrix(CooperationScore);
-
         SummingMatrix = mat.createMatrix(1, NUM_AGENTS, 1);
     }
 
@@ -44,33 +41,29 @@ public class Driver {
 
         initialize();
 
-        // System.out.println("ALPHA: " + LIFE_POINT_THRESHOLD + " BETA: " +
-        // LIFE_POINT_REWARDS[0]);
+      
 
         boolean gameRunning = true;
-
         double[] payoffs;
         double lifeScore;
         int i;
         int NumRuns = 0;
-        while (gameRunning && NumRuns < 40) {
-            // System.out.println("\nRound " + NumRuns);
+        while (gameRunning && NumRuns < runs_per) {
+            gameRunning = false;
             payoffs = mat.matrixMultiply(SummingMatrix, CooperationScore)[0];
             for (i = 0; i < NUM_AGENTS; i++) {
-
-                // System.out.print("Agent " + i + Agents[i].printAgent());
-
+                if(!Agents[i].isCooperator()){
+                    gameRunning = true;
+                }
                 if (!Agents[i].isAlive()) {
-                    // System.err.println("");
                     continue;
                 }
 
                 // Deaths
                 lifeScore = payoffs[i];
-                // System.out.print(" {" + lifeScore + "} ");
                 if (lifeScore < LIFE_POINT_THRESHOLD) {
+                    gameRunning = true;
                     // Agent Dies
-                    // System.out.println("DIES");
                     handleAgentDeath(i);
                 } else {
                     // Updating Stratagies
@@ -99,9 +92,6 @@ public class Driver {
             }
         }
         int[] rtn = { numCooperator, numDefector, numDead };
-        // System.out.println(
-        // "Num Cooperators: " + numCooperator + "\nNum Defectors: " + numDefector +
-        // "\nNum Dead: " + numDead);
         return rtn;
 
     }
@@ -113,7 +103,6 @@ public class Driver {
         }
         int startingDefector = (int) NUM_AGENTS / 2;
         Agents[startingDefector].setCooperator(false);
-        // System.out.println("Defector " + startingDefector);
     }
 
     public void setupConnections(String latice) {
@@ -155,15 +144,7 @@ public class Driver {
                         num++;
                     }
                 }
-
                 Agents[Ai].connections = connections;
-
-                // Printing Connections
-                // String str = "";
-                // for (int i = 0; i < Agents[Ai].connections.length; i++) {
-                // str = str + Agents[Ai].connections[i] + " ";
-                // }
-                // System.out.println("Agent " + Ai + " Connections " + str);
             }
         }
     }
@@ -173,7 +154,6 @@ public class Driver {
         boolean agentStrat = Agents[AgentNumber].isCooperator();
         int numConnections = Agents[AgentNumber].connections.length;
         if (numConnections == 0) {
-            // System.out.println("Agent has no connections");
             return;
         }
 
@@ -185,8 +165,6 @@ public class Driver {
         boolean otherAgentStrat = Agents[otherAgent].isCooperator();
 
         if (agentStrat == otherAgentStrat) {
-            // System.out.println("Same Strat");
-            // System.out.println("");
             return;
         }
 
@@ -194,14 +172,9 @@ public class Driver {
         double prob = 1 / (1 + Math.exp(-(otherAgentLifePoints - agentLifePoints) / CONSTANT));
         double randNum = Math.random();
         if (prob > randNum) {
-            // System.out.println("Changing Sides");
             Agents[AgentNumber].setCooperator(otherAgentStrat);
             updateLifePoints(AgentNumber);
-        } else {
-            // System.out.println("No Change");
-            // System.out.println("");
-
-        }
+        } 
     }
 
     public void handleAgentDeath(int AgentNumber) {
@@ -232,18 +205,21 @@ public class Driver {
 
     public void updateLifePoints(int AgentNumber) {
         for (int i = 0; i < NUM_AGENTS; i++) {
-
-            boolean isAdjacent = CooperationScore[AgentNumber][i] != 0;
-            if (isAdjacent) {
+            boolean isAdjacent;
+            int[] cons = Agents[AgentNumber].connections;
+            for( int connection : cons){
+                isAdjacent = connection == i;
+                if (isAdjacent) {
                 CooperationScore[AgentNumber][i] = calculateLifePoints(AgentNumber, i);
                 CooperationScore[i][AgentNumber] = calculateLifePoints(i, AgentNumber);
             }
+            }
+            
         }
 
     }
 
     public double calculateLifePoints(int Aj, int Ai) {
-        // System.out.println("Calculating Life Points");
         if (Aj == Ai) {
             return 0;
         }
@@ -252,7 +228,6 @@ public class Driver {
         }
         boolean AiCoop = Agents[Ai].isCooperator();
         boolean AjCoop = Agents[Aj].isCooperator();
-        // System.out.println("Coop " + AiCoop + ":" + AjCoop);
         if (AiCoop) {
             if (AjCoop) {
                 // Both are cooperators
