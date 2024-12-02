@@ -26,6 +26,10 @@ public class SingleRunDriver {
         NUM_AGENTS = latdim*latdim;
     }
 
+    /*
+    Initializes the run
+    */
+
     public void initialize() {
         Agents = new Agent[NUM_AGENTS];
         mat = new MatrixDouble();
@@ -37,6 +41,13 @@ public class SingleRunDriver {
 
         SummingMatrix = mat.createMatrix(1, NUM_AGENTS, 1);
     }
+
+    /*
+    Runs a single version of the simulation
+        \param alpha determines the alpha value of the simultion(death threshold)
+        \param beta determines the beta value of the simulation(reward for defection)
+        \param roundstop determines the number of steps of simulations to do initially
+    */
 
     public int[][] runGame(double alpha, double beta, int roundstop) {
         LIFE_POINT_THRESHOLD = 4 * alpha;
@@ -73,7 +84,10 @@ public class SingleRunDriver {
         }
         return getEnv();
     }
-
+ /*
+    Continues the simulation from where it left off
+        \param roundstop determines the number of steps of simulation to do 
+    */
     public int[][] resumeGame(int roundstop){
         boolean gameRunning = true;
 
@@ -82,7 +96,6 @@ public class SingleRunDriver {
         int i;
         int NumRuns = 0;
         while (gameRunning && NumRuns < roundstop) {
-            // System.out.println("\nRound " + NumRuns);
             payoffs = mat.matrixMultiply(SummingMatrix, CooperationScore)[0];
             for (i = 0; i < NUM_AGENTS; i++) {
 
@@ -105,6 +118,12 @@ public class SingleRunDriver {
         }
         return getEnv();
     }
+
+     /*
+    returns a matrix representation of the current environment
+        the return matrix values are a representation of the state of the corresponding agent.
+        1 is cooperator, 2 is defetor, 0 is dead
+    */
     public int[][] getEnv() {
         int[][] rtn = new int[NUM_AGENTS][NUM_AGENTS];
         int[] agentloc = {0,0};
@@ -124,6 +143,9 @@ public class SingleRunDriver {
         return rtn;
     }
 
+     /*
+   Initializes the array of agents
+    */
     public void setupAgents() {
         Agents = new Agent[NUM_AGENTS];
         for (int i = 0; i < NUM_AGENTS; i++) {
@@ -137,7 +159,10 @@ public class SingleRunDriver {
         }
         Agents[startingDefector].setCooperator(false);
     }
-
+ /*
+    Initializes the connections matrix for the simulation.
+        \param latice is not useful. it is currently only implemented for a square lattice
+    */
     public void setupConnections(String latice) {
         CooperationScore = mat.createMatrix(NUM_AGENTS, NUM_AGENTS, 0);
         if (latice == "square") {
@@ -182,7 +207,11 @@ public class SingleRunDriver {
             }
         }
     }
-
+    /*
+    Updates the strategy of a particular agent
+        \param Agentnumber determines which agent has it's strategy updated
+        \param payoffs is an array to be multiplied by the conections matrix to calculate the lifepoints of an agent
+    */
     public void updateStratagies(int AgentNumber, double[] payoffs) {
         double agentLifePoints = payoffs[AgentNumber];
         boolean agentStrat = Agents[AgentNumber].isCooperator();
@@ -211,7 +240,10 @@ public class SingleRunDriver {
         } else {
         }
     }
-
+ /*
+    Kills an agent
+        \param AgentNumber is the number of the agent in the array to kill.
+    */
     public void handleAgentDeath(int AgentNumber) {
         // kill agent
         Agents[AgentNumber].setAlive(false);
@@ -237,7 +269,10 @@ public class SingleRunDriver {
         Agents[AgentNumber].connections = new int[0];
 
     }
-
+ /*
+    Chnages the lifepoints of an agent to be correct after a change in the matrix
+        \param agent is the agent which needs to be updated
+    */
     public void updateLifePoints(int AgentNumber) {
         for (int i = 0; i < NUM_AGENTS; i++) {
             boolean isAdjacent;
@@ -253,7 +288,11 @@ public class SingleRunDriver {
         }
 
     }
-
+     /*
+    Takes two agents and decides which get points according to the prisoners dilemma
+        \param Aj is the agent that is being compared to
+        \param Ai is the agent which receives the decided point value
+    */
     public double calculateLifePoints(int Aj, int Ai) {
         // System.out.println("Calculating Life Points");
         if (Aj == Ai) {
